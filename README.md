@@ -23,7 +23,8 @@ Guarda información en un archivo (datos.txt) envía el archivo al servidor remo
 —------------------------------------------------------------------------------------------------------------------------
 Instalación y uso
 —------------------------------------------------------------------------------------------------------------------------
-Este programa debe ser ejecutado con permisos sudo, por lo tanto antes de ejecutarlo debemos otorgarle permisos usando el siguiente comando:
+Este programa debe ser ejecutado con permisos, por lo tanto antes de ejecutarlo debemos otorgarle permisos usando los siguientes comandos:
+sudo bash.sh
 chmod +x bash.sh
 Para ejecutar el script usaremos el siguiente comando:
 ./bash.sh  

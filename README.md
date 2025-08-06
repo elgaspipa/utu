@@ -11,7 +11,7 @@ Importante
 —------------------------------------------------------------------------------------------------------------------------
 Funcionalidad
 —------------------------------------------------------------------------------------------------------------------------
-El script lo que hace es que al ejecutarse verifica si cuenta con las herramientas necesarias para funcionar correctamente, algunas de esas herramientas son "netcat", "lshw"lscpu",  "mailutils",  "msmtp-mta mailutils", estas mismas son importantes para la ejecución del programa.
+El primer script (bash.sh) lo que hace es que al ejecutarse verifica si cuenta con las herramientas necesarias para funcionar correctamente, algunas de esas herramientas son "netcat", "lshw"lscpu",  "mailutils",  "msmtp-mta mailutils", estas mismas son importantes para la ejecución del programa.
 Recolecta información del sistema:
 CPU (lscpu)
 Hardware en general (lshw)
@@ -20,15 +20,23 @@ Disco ( df -h)
 Red (ip a)
 Guarda información en un archivo (datos.txt) envía el archivo al servidor remoto usando netcat y luego a un correo electrónico el cual esta configurado con msmtp.
 
+El segundo script (atacante.sh) actúa como receptor de la información enviada desde el equipo remoto (víctima), permitiendo al usuario escuchar conexiones entrantes en el puerto 4444 mediante Netcat.
+
+
 —------------------------------------------------------------------------------------------------------------------------
 Instalación y uso
 —------------------------------------------------------------------------------------------------------------------------
 Este programa debe ser ejecutado con permisos, por lo tanto antes de ejecutarlo debemos otorgarle permisos usando los siguientes comandos:
 sudo bash.sh
+sudo atacante.sh
 chmod +x bash.sh
-Para ejecutar el script usaremos el siguiente comando:
+chmod +x atacante.sh
+Para ejecutar el programa usaremos los siguientes comandos:
+./atacante.sh
+Escucha en el puerto 4444 con Netcat, instalándolo si es necesario, para recibir y mostrar datos enviados desde otro sistema.
 ./bash.sh  
-Permitiendo al script ejecutarse y recopilar dicha información para posteriormente ser enviada mediante correo electrónico.
+Esto ejecuta y recopila la información para posteriormente ser enviada mediante correo electrónico y a la maquina del atacante.
+
 —------------------------------------------------------------------------------------------------------------------------
 Ejemplos de uso:
 —------------------------------------------------------------------------------------------------------------------------
